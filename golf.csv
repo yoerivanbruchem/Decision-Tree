@@ -1,0 +1,15 @@
+Outlook,Temperature,Humidity,Windy,Result
+sunny,hot,high,weak,indoor
+sunny,hot,high,strong,indoor
+overcast,hot,high,weak,outdoor
+rain,mild,high,weak,outdoor
+rain,cool,normal,weak,outdoor
+rain,cool,normal,strong,indoor
+overcast,cool,normal,strong,outdoor
+sunny,mild,high,weak,indoor
+sunny,cool,normal,weak,outdoor
+rain,mild,normal,weak,outdoor
+sunny,mild,normal,strong,outdoor
+overcast,mild,high,strong,outdoor
+overcast,hot,normal,weak,outdoor
+rain,mild,high,strong,indoor
