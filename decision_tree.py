@@ -69,9 +69,7 @@ class DecisionTree:
             default_class = result_class_maximum_value
 
             # Get split feature.
-            feature_gains = {}
-            for feature in tree_features:
-                feature_gains[feature] = self.__gain(data_set, feature, target_feature)
+            feature_gains = {feature: self.__gain(data_set, feature, target_feature) for (feature) in tree_features}
 
             split_feature = max(feature_gains, key=feature_gains.get)
             tree = {split_feature: {}}
