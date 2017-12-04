@@ -47,6 +47,18 @@ class DecisionTree:
 
         return self.__entropy(data_set, target_feature) - data_entropy
 
+    def __gini(self, data_set, split_feature, target_feature):
+        """Return the gini impurity for the given feature in the data set."""
+        frequencies = self.__calculate_frequency(data_set, split_feature)
+        gini_value = 1.0
+
+        # Calculate the gini of the data.
+        for value, frequency in frequencies.items():
+            probability = frequency / sum(frequencies.values())
+            gini_value -= math.pow(probability, 2)
+
+        return gini_value
+
     def __get_split_feature(self, data_set, target_feature, tree_features):
         """Returns the best split feature using the (user) defined criterion."""
 
@@ -54,6 +66,11 @@ class DecisionTree:
             feature_gains = {feature: self.__gain(data_set, feature, target_feature) for (feature) in tree_features}
             split_feature = max(feature_gains, key=feature_gains.get)
             return split_feature
+        elif self.__criterion == 'gini':
+            feature_ginis = {feature: self.__gini(data_set, feature, target_feature) for (feature) in tree_features}
+            split_feature = min(feature_ginis, key=feature_ginis.get)
+            return split_feature
+            # TODO: I should check this (gini index).
 
     def __built_tree(self, data_set, features, target_feature, default_class):
         """Built a tree using the data_set and the given features."""
