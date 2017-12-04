@@ -5,35 +5,24 @@ import pandas as pd
 
 
 class DecisionTree:
-    """
-    Class for creating a Decision Tree.
-
-    """
+    """Class for creating a Decision Tree."""
 
     def __init__(self, data, features, resulting_feature):
-        self.__training_data = data
+        """Create an instance of the decision tree."""
+        self.__train_data = data
         self.__features = features
         self.__resulting_feature = resulting_feature
-        self.__tree = self.__built_tree(self.__training_data, self.__features, self.__resulting_feature, None)
-        self.__graph = pydot.Dot(graph_type='graph', strict=False)
-        self.__graph_node_count = 0
+        self.__tree = self.__built_tree(self.__train_data, self.__features, self.__resulting_feature, None)
         self.accuracy_of_previous_test = 0
 
     def __calculate_frequency(self, data_set, feature):
-        value_frequency = dict()
-
-        # Calculate occurrence of values in multiple rows for given feature.
-        for index, row in data_set.iterrows():
-            value = row[feature]
-
-            if value in value_frequency:
-                value_frequency[value] += 1
-            else:
-                value_frequency[value] = 1
-
-        return value_frequency
+        """Return the determined frequency of each value in the data set for a given feature."""
+        feature_data = list(data_set[feature])
+        value_frequency = Counter(feature_data)
+        return dict(value_frequency)
 
     def __entropy(self, data_set, target_feature):
+        """Return the calculated the entropy of the target_feature in the given data set."""
         frequencies = self.__calculate_frequency(data_set, target_feature)
         feature_entropy = 0.0
         number_of_values = len(data_set)
@@ -46,18 +35,20 @@ class DecisionTree:
         return feature_entropy * -1
 
     def __gain(self, data_set, split_feature, target_feature):
+        """Return the calculated information gain for a given split_feature to another target_feature."""
         frequencies = self.__calculate_frequency(data_set, split_feature)
-        subset_entropy = 0.0
+        data_entropy = 0.0
 
+        # Calculate the entropy of the data.
         for value, frequency in frequencies.items():
             probability = frequency / sum(frequencies.values())
             data_subset = data_set[data_set[split_feature] == value]
-            subset_entropy += probability * self.__entropy(data_subset, target_feature)
+            data_entropy += probability * self.__entropy(data_subset, target_feature)
 
-        return self.__entropy(data_set, target_feature) - subset_entropy
+        return self.__entropy(data_set, target_feature) - data_entropy
 
     def __built_tree(self, data_set, features, target_feature, default_class):
-
+        """Built a tree using the data_set and the given features."""
         tree_features = features[:]
         data_set = data_set[:]
         result_class = Counter(x for x in data_set[target_feature])
@@ -97,9 +88,11 @@ class DecisionTree:
             return tree
 
     def get_tree(self):
+        """Return the tree."""
         return self.__tree
 
     def __classify(self, instance, tree, default=None):
+        """Classify a given instance using the trained tree."""
         attribute = str(list(tree.keys())[0])
         keys_of_attribute = list(tree[attribute].keys())
         if instance[attribute].iloc[0] in keys_of_attribute:
@@ -113,6 +106,7 @@ class DecisionTree:
             return default
 
     def classify_data(self, test_set, include_features_in_result=False):
+        """Classify a data test set."""
         if len(test_set) == 1:
             return self.__classify(test_set, self.__tree)
         else:
