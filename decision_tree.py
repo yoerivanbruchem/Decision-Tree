@@ -4,7 +4,11 @@ import pydot
 import pandas as pd
 
 
-class Tree:
+class DecisionTree:
+    """
+    Class for creating a Decision Tree.
+
+    """
 
     def __init__(self, data, features, resulting_feature):
         self.__training_data = data
@@ -94,55 +98,6 @@ class Tree:
 
     def get_tree(self):
         return self.__tree
-
-    def __create_edges(self, tree, features, parent_node=None, parent_branch=None):
-
-        for key, value in tree.items():
-
-            if parent_node is None:
-
-                # Create node.
-                self.__graph_node_count += 1
-                name = str(self.__graph_node_count) + str(key)
-                node = pydot.Node(name=name, label=key)
-                self.__graph.add_node(node)
-
-                # Go to next item in tree.
-                self.__create_edges(value, features, parent_node=name)
-
-            elif key in features:
-
-                # Create node.
-                self.__graph_node_count += 1
-                name = str(self.__graph_node_count) + str(key)
-                node = pydot.Node(name=name, label=key)
-                self.__graph.add_node(node)
-
-                # Connect nodes.
-                edge = pydot.Edge(parent_node, name, label=parent_branch)
-                self.__graph.add_edge(edge)
-
-                # Go te next item in tree.
-                self.__create_edges(value, features, parent_node=name)
-
-            elif not isinstance(value, dict):
-
-                # Create leaf node.
-                self.__graph_node_count += 1
-                name = str(self.__graph_node_count) + str(value)
-                node = pydot.Node(name, label=value)
-                self.__graph.add_node(node)
-
-                # Connect leaf to parent node.
-                edge = pydot.Edge(parent_node, name, label=key)
-                self.__graph.add_edge(edge)
-
-            else:
-                self.__create_edges(value, features, parent_node=parent_node, parent_branch=key)
-
-    def create_visualization(self, file_name="Tree"):
-        self.__create_edges(self.__tree, self.__features)
-        self.__graph.write_png("{}.png".format(file_name))
 
     def __classify(self, instance, tree, default=None):
         attribute = str(list(tree.keys())[0])
