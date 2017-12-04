@@ -1,17 +1,17 @@
 import math
 from collections import Counter
-import pydot
 import pandas as pd
 
 
 class DecisionTree:
     """Class for creating a Decision Tree."""
 
-    def __init__(self, data, features, resulting_feature):
+    def __init__(self, data, features, resulting_feature, criterion='entropy'):
         """Create an instance of the decision tree."""
         self.__train_data = data
         self.__features = features
         self.__resulting_feature = resulting_feature
+        self.__criterion = criterion
         self.__tree = self.__built_tree(self.__train_data, self.__features, self.__resulting_feature, None)
         self.accuracy_of_previous_test = 0
 
@@ -47,6 +47,14 @@ class DecisionTree:
 
         return self.__entropy(data_set, target_feature) - data_entropy
 
+    def __get_split_feature(self, data_set, target_feature, tree_features):
+        """Returns the best split feature using the (user) defined criterion."""
+
+        if self.__criterion == 'entropy':
+            feature_gains = {feature: self.__gain(data_set, feature, target_feature) for (feature) in tree_features}
+            split_feature = max(feature_gains, key=feature_gains.get)
+            return split_feature
+
     def __built_tree(self, data_set, features, target_feature, default_class):
         """Built a tree using the data_set and the given features."""
         tree_features = features[:]
@@ -69,9 +77,7 @@ class DecisionTree:
             default_class = result_class_maximum_value
 
             # Get split feature.
-            feature_gains = {feature: self.__gain(data_set, feature, target_feature) for (feature) in tree_features}
-
-            split_feature = max(feature_gains, key=feature_gains.get)
+            split_feature = self.__get_split_feature(data_set, target_feature, tree_features)
             tree = {split_feature: {}}
 
             # Remove current feature from feature list.
